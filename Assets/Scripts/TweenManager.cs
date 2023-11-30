@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 
 public class TweenManager : MonoBehaviour
 {
@@ -9,9 +11,34 @@ public class TweenManager : MonoBehaviour
     public Transform sphere;
     public Transform capsule;
     public Ease moveEase;
+
+    Tween signTween;
     // Start is called before the first frame update
     void Start()
     {
+        int updateCount =0;
+
+        signTween = capsule.DORotate(new Vector3(0, 0, -180),3f).OnUpdate(() =>
+        {
+            updateCount++;
+        });
+
+
+        signTween = capsule.DORotate(new Vector3(0, 0, -100), 3f).SetLoops(-1, LoopType.Incremental)
+            .OnPause(() =>
+        {
+            sphere.DOScale(new Vector3(2, 2, 2), 2f);
+        })
+            .OnPlay(() =>
+        {
+            sphere.DOScale(new Vector3(1, 1, 1), 0.4f);
+        });
+
+
+        signTween = capsule.DORotate(new Vector3(0, 0, -180), 2f).OnUpdate(() =>
+        {
+
+        });
 
     }
 
@@ -52,11 +79,9 @@ public class TweenManager : MonoBehaviour
             sphere.DOScaleZ(3f, 4f);
             #endregion
 
-            #endregion Transform Section
+            #endregion DOTween Transform
 
-
-
-            #region DOTWeen Behaviours
+            #region DOTWeen Behaviours 
 
             #region From
             //Scale to current scale from zero scale in 2 sec. Current is the target scale.
@@ -75,16 +100,43 @@ public class TweenManager : MonoBehaviour
 
             #region Loop
 
-            #endregion
-
-            #endregion
-
-            /*
-            //3.behavior loop
-            cube.DOMoveX(0f,1f).SetLoops(2);
-            cube.DOMoveX(2f,2f).SetLoops(-1, LoopType.Incremental);
+            cube.DOMoveX(0f, 1f).SetLoops(2);
+            cube.DOMoveX(2f, 2f).SetLoops(-1, LoopType.Incremental);
             cube.DOMoveX(2f, 2f).SetLoops(-1, LoopType.Yoyo);
             cube.DOMoveX(2f, 2f).SetLoops(-1, LoopType.Restart);
+            capsule.DORotate(new Vector3(0, 0, -100), 3f).SetLoops(-1, LoopType.Incremental);
+
+            #endregion
+
+            #region Delay
+            capsule.DORotate(new Vector3(0,0,180), 2f).SetDelay(4f);
+            #endregion
+
+            #endregion DOTWeen Behaviours
+
+            #region DOTWeen States
+
+            #region ONComplete
+
+            cube.DOMove(Vector3.zero, 2f).OnComplete(() =>
+            {
+                sphere.DOScale(new Vector3(1, 3, 4), 1f);
+            });
+
+            #endregion ONComplete
+
+
+            signTween.Kill();
+
+            if (signTween.IsPlaying())
+            {
+                signTween.Pause();
+            }
+            else { signTween.Play(); }
+            #endregion DOTWeen States
+            /*
+            //3.behavior loop
+
 
             */
 
